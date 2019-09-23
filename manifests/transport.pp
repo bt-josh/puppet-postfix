@@ -37,6 +37,7 @@
 define postfix::transport (
   Optional[String]          $destination = undef,
   Optional[String]          $nexthop=undef,
+  Optional[Integer]         $port=undef,
   Stdlib::Absolutepath      $file='/etc/postfix/transport',
   Enum['present', 'absent'] $ensure='present'
 ) {
@@ -56,10 +57,17 @@ define postfix::transport (
         $change_nexthop = "clear pattern[. = '${name}']/nexthop"
       }
 
+      if ($port) {
+        $change_port = "set pattern[. = '${name}']/port '${port}'"
+      } else {
+        $change_port = "clear pattern[. = '${name}']/port"
+      }
+
       $changes = [
         "set pattern[. = '${name}'] '${name}'",
         $change_destination,
         $change_nexthop,
+        $change_port,
       ]
     }
 

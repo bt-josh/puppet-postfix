@@ -102,6 +102,29 @@ describe 'postfix::transport' do
             "set pattern[. = 'foo'] 'foo'",
             "clear pattern[. = 'foo']/transport",
             "clear pattern[. = 'foo']/nexthop",
+            "clear pattern[. = 'foo']/port",
+          ])
+        }
+      end
+
+      context 'when using new port values' do
+        let (:params) { {
+          :destination => 'smtp',
+          :nexthop     => '[test.example.com]',
+          :port        => 2525,
+          :file        => '/tmp/transport',
+          :ensure      => 'present',
+        } }
+
+        it { is_expected.to contain_class('postfix::augeas') }
+        it { is_expected.to contain_augeas('Postfix transport - foo').with(
+          :incl    => '/tmp/transport',
+          :lens    => 'Postfix_Transport.lns',
+          :changes => [
+            "set pattern[. = 'foo'] 'foo'",
+            "set pattern[. = 'foo']/transport 'smtp'",
+            "set pattern[. = 'foo']/nexthop '[test.example.com]'",
+            "set pattern[. = 'foo']/port '2525'",
           ])
         }
       end
@@ -122,6 +145,7 @@ describe 'postfix::transport' do
             "set pattern[. = 'foo'] 'foo'",
             "set pattern[. = 'foo']/transport 'bar'",
             "set pattern[. = 'foo']/nexthop 'baz'",
+            "clear pattern[. = 'foo']/port",
           ])
         }
       end

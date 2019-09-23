@@ -13,10 +13,9 @@ the.backed-up.domain.tld       relay:[their.mail.host.tld]
 example.com      uucp:example
 example.com      slow:
 example.com      :[gateway.example.com]
-user.foo@example.com  
+user.foo@example.com
     smtp:bar.example:2025
 .example.com     error:mail for *.example.com is not deliverable
-/^bounce\+.*/ sympabounce:
 "
 
 (* Test: Postfix_Transport.lns *)
@@ -46,8 +45,10 @@ test Postfix_Transport.lns get conf =
   { "pattern" = ".example.com"
     { "transport" = "error" }
     { "nexthop" = "mail for *.example.com is not deliverable" } }
-  { "pattern" = "/^bounce\+.*/"
-    { "transport" = "sympabounce" }
-    { "nexthop" } }
 
-
+(* Test: Postfix_Transport.lns
+     Bug #303 *)
+test Postfix_Transport.lns get "user@example.com [12.34.56.78]:587\n" =
+  { "pattern" = "user@example.com"
+    { "host" = "[12.34.56.78]" }
+    { "port" = "587" } }
